@@ -2,10 +2,10 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: weather-api
-  namespace: weather-system
+  namespace: default
 spec:
   interval: 1m
-  targetNamespace: weather-system
+  targetNamespace: default
   chart:
     spec:
       chart: .helm/web-api 
