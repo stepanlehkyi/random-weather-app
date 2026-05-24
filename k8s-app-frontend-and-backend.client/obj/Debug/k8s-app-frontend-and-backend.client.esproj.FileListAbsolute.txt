@@ -1,0 +1,2 @@
+C:\Users\stepa\source\repos\k8s-app-frontend-and-backend\k8s-app-frontend-and-backend.client\obj\Debug\k8s-app-frontend-and-backend.client.esproj.CoreCompileInputs.cache
+C:\docker-trainning\docker-and-kubernetes\k8s-app-frontend-and-backend.client\obj\Debug\k8s-app-frontend-and-backend.client.esproj.CoreCompileInputs.cache

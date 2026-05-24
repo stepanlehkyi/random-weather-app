@@ -1,0 +1,59 @@
+<div class="weather-container">
+  <h2>Weather Forecast</h2>
+  
+  <div class="button-group">
+    <button 
+      (click)="loadWeather()" 
+      [disabled]="isLoading"
+      class="btn btn-primary"
+    >
+      {{ isLoading ? 'Loading...' : 'Refresh Forecast' }}
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    <strong>Error:</strong> {{ error }}
+  </div>
+
+  <div *ngIf="isLoading && !weatherForecasts.length" class="alert alert-info">
+    Loading weather data...
+  </div>
+
+  <div *ngIf="weatherForecasts.length > 0" class="table-wrapper">
+    <table class="weather-table">
+      <thead>
+        <tr>
+ <th>Date</th>
+      <th>Temperature (°C)</th>
+          <th>Temperature (°F)</th>
+    <th>Summary</th>
+</tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let forecast of weatherForecasts" class="forecast-row">
+       <td class="date-cell">{{ formatDate(forecast.date) }}</td>
+     <td class="temp-cell">
+       <span class="temp-badge" [ngClass]="getTemperatureClass(forecast.temperatureC)">
+   {{ forecast.temperatureC }}°
+            </span>
+       </td>
+          <td class="temp-cell">
+      <span class="temp-badge" [ngClass]="getTemperatureClass(forecast.temperatureC)">
+              {{ forecast.temperatureF }}°
+  </span>
+   </td>
+          <td class="summary-cell">
+            <span class="summary-badge" [ngClass]="getSummaryClass(forecast.summary)">
+              {{ forecast.summary || 'N/A' }}
+            </span>
+            <svg style="cursor: pointer;" (click)="onSubmit(forecast)" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM565-275q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z" /></svg>
+          </td>
+   </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!isLoading && weatherForecasts.length === 0 && !error" class="alert alert-info">
+    Click "Refresh Forecast" to load weather data
+  </div>
+</div>

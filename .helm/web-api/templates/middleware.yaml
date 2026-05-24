@@ -1,0 +1,12 @@
+{{- if and .Values.api.ingress.enabled .Values.api.ingress.middleware.enabled -}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.api.ingress.middleware.name }}
+  labels:
+    app: {{ .Values.api.nameOverride }}
+spec:
+  stripPrefix:
+    prefixes:
+      {{- toYaml .Values.api.ingress.middleware.prefixes | nindent 6 }}
+{{- end }}

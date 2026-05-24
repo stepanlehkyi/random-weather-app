@@ -1,0 +1,6 @@
+@k8s_app_frontend_and_backend.web_api_HostAddress = http://localhost:5099
+
+GET {{k8s_app_frontend_and_backend.web_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

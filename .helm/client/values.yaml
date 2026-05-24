@@ -1,0 +1,67 @@
+env_vars:
+  frontend_api_base_url: api/
+  api_timeout: 30000
+  log_level: info
+  max_retries: 3
+  retry_delay_ms: 1000
+
+replicaCount: 2
+
+nameOverride: "weather-frontend"
+fullnameOverride: "weather-frontend"
+
+image:
+  repository: stepanlehkyi/angular-app
+  tag: "1.0.8"
+  pullPolicy: IfNotPresent
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 2
+
+configMapName: "angular-app-config"
+
+probes:
+  readiness:
+    httpGet:
+      path: /index.html
+      port: 80
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
+  liveness:
+    httpGet:
+      path: /index.html
+      port: 80
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    failureThreshold: 5
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "300m"
+    memory: "256Mi"
+
+service:
+  type: ClusterIP
+  port: 80
+  containerPort: 80
+  protocol: TCP
+  name: http
+
+
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-strip-api-prefix@kubernetescrd
+  hosts:
+    - host: angular-dotnet-web-app.com.ua
+      paths:
+        - path: /
+          pathType: Prefix

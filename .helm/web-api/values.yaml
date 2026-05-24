@@ -1,0 +1,73 @@
+# Backend API Configuration
+apiConfig:
+  name: dotnet-api-config
+  data:
+    WeatherApi__MaxForecastDays: "5"
+    WeatherApi__MinTemperatureC: "-20"
+    WeatherApi__MaxTemperatureC: "0"
+    WeatherApi__EnableCaching: "false"
+    WeatherApi__CacheDurationSeconds: "300"
+    WeatherApi__ApiVersion: "1.0"
+    ASPNETCORE_ENVIRONMENT: "Production"
+    ASPNETCORE_URLS: "http://+:8080"
+    ConnectionStrings__Redis: "redis-db:6379"
+    Logging__LogLevel__Default: "Information"
+    Logging__LogLevel__Microsoft.AspNetCore: "Warning"
+
+api:
+  ingress:
+    enabled: true
+    className: "traefik"
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: default-strip-api-prefix@kubernetescrd
+    hosts:
+      - host: angular-dotnet-web-app.com.ua
+        paths:
+          - path: /api
+            pathType: Prefix
+    middleware:
+      enabled: true
+      name: strip-api-prefix
+      prefixes:
+        - /api
+
+  replicaCount: 2
+  nameOverride: "weather-api"
+  fullnameOverride: "weather-api"
+  
+  image:
+    repository: stepanlehkyi/dotnet-web-api
+    tag: "1.0.5"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 8080
+    containerPort: 8080  # Used by the deployment template
+    protocol: TCP
+    name: http
+
+  probes:
+    liveness:
+      httpGet:
+        path: /health/live
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 15
+    readiness:
+      httpGet:
+        path: /health/ready
+        port: 8080
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      timeoutSeconds: 7
+      successThreshold: 1
+      failureThreshold: 5
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"

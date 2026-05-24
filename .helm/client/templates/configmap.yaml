@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMapName }}
+data:
+  API_BASE_URL: {{ quote .Values.env_vars.frontend_api_base_url }}
+  API_TIMEOUT: {{ quote .Values.env_vars.api_timeout }}
+  LOG_LEVEL: {{ quote .Values.env_vars.log_level }}
+  MAX_RETRIES: {{ quote .Values.env_vars.max_retries }}
+  RETRY_DELAY_MS: {{ quote .Values.env_vars.retry_delay_ms }}

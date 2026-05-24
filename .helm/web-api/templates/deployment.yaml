@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.api.fullnameOverride }}-deployment
+  labels:
+    app: {{ .Values.api.nameOverride }}
+spec:
+  replicas: {{ .Values.api.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.api.nameOverride }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.api.nameOverride }}
+    spec:
+      containers:
+        - name: {{ .Values.api.nameOverride }}
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.api.service.containerPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.apiConfig.name }}
+          {{- if .Values.api.probes.liveness }}
+          livenessProbe:
+            {{- toYaml .Values.api.probes.liveness | nindent 12 }}
+          {{- end }}
+          {{- if .Values.api.probes.readiness }}
+          readinessProbe:
+            {{- toYaml .Values.api.probes.readiness | nindent 12 }}
+          {{- end }}
+          {{- if .Values.api.resources }}
+          resources:
+            {{- toYaml .Values.api.resources | nindent 12 }}
+          {{- end }}
