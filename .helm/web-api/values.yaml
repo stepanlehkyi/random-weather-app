@@ -31,7 +31,7 @@ api:
       prefixes:
         - /api
 
-  replicaCount: 2
+  replicaCount: 3
   nameOverride: "weather-api"
   fullnameOverride: "weather-api"
   
