@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.apiConfig.name }}
   labels:
-    app: {{ .Values.nameOverride }} # Reusing the label from earlier for consistency
+    app: {{ .Values.api.nameOverride }} # Reusing the label from earlier for consistency
 data:
   {{- range $key, $value := .Values.apiConfig.data }}
   {{ $key }}: {{ $value | quote }}
