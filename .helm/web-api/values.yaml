@@ -10,7 +10,7 @@ apiConfig:
     WeatherApi__ApiVersion: "1.0"
     ASPNETCORE_ENVIRONMENT: "Production"
     ASPNETCORE_URLS: "http://+:8080"
-    ConnectionStrings__Redis: "redis-db:6379"
+    ConnectionStrings__Redis: "my-redis-cluster-leader:6379"
     Logging__LogLevel__Default: "Information"
     Logging__LogLevel__Microsoft.AspNetCore: "Warning"
 
