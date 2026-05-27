@@ -1,0 +1,40 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: web-api-prod
+  namespace: prod
+spec:
+  interval: 1m
+  targetNamespace: prod
+  chart:
+    spec:
+      chart: .helm/web-api
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  values:
+    replicaCount: 2 
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 75
+    nodeSelector:
+      env: prod
+    resources:
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+      requests:
+        cpu: "500m"
+        memory: "512Mi"
+    ingress:
+      hosts:
+        - host: angular-dotnet-web-app.com.ua
+          paths:
+            - path: /api
+              pathType: Prefix
+    apiConfig:
+      data:
+        ASPNETCORE_ENVIRONMENT: "Production"
