@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ .Values.api.nameOverride }}
 spec:
-  replicas: {{ .Values.api.replicaCount }}
+  replicas: {{ .Values.api.replicaCount | default .Values.api.replicaCount}}
   selector:
     matchLabels:
       app: {{ .Values.api.nameOverride }}
@@ -14,6 +14,10 @@ spec:
       labels:
         app: {{ .Values.api.nameOverride }}
     spec:
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Values.api.nameOverride }}
           image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
