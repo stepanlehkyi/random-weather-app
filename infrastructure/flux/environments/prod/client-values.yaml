@@ -18,8 +18,8 @@ image:
 strategy:
   type: RollingUpdate
   rollingUpdate:
-    maxUnavailable: 1
-    maxSurge: 2
+    maxUnavailable: 0
+    maxSurge: 1
 
 configMapName: "angular-app-config"
 
@@ -43,9 +43,9 @@ resources:
   requests:
     cpu: "100m"
     memory: "128Mi"
-  limits:
-    cpu: "300m"
-    memory: "256Mi"
+limits:
+    cpu: "500m"
+    memory: "512Mi"
 
 service:
   type: ClusterIP
@@ -54,21 +54,23 @@ service:
   protocol: TCP
   name: http
 
-
 ingress:
   enabled: true
   className: "traefik"
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: default-strip-api-prefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: prod-strip-api-prefix@kubernetescrd
   hosts:
     - host: angular-dotnet-web-app.com.ua
       paths:
-        - path: /
+    - path: /
           pathType: Prefix
 
+nodeSelector:
+  env: prod
+
 autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 3
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80

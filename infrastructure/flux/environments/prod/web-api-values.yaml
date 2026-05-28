@@ -1,40 +1,40 @@
-# Backend API Configuration
+# Backend API Configuration for Production
 apiConfig:
   name: weather-api-config
   data:
     WeatherApi__MaxForecastDays: "5"
     WeatherApi__MinTemperatureC: "-20"
     WeatherApi__MaxTemperatureC: "0"
-    WeatherApi__EnableCaching: "false"
-    WeatherApi__CacheDurationSeconds: "300"
+    WeatherApi__EnableCaching: "true"
+    WeatherApi__CacheDurationSeconds: "600"
     WeatherApi__ApiVersion: "1.0"
     ASPNETCORE_ENVIRONMENT: "Production"
     ASPNETCORE_URLS: "http://+:8080"
-    ConnectionStrings__Redis: "my-redis-cluster-leader:6379"
-    Logging__LogLevel__Default: "Information"
-    Logging__LogLevel__Microsoft.AspNetCore: "Warning"
+  ConnectionStrings__Redis: "redis-prod-leader.prod.svc.cluster.local:6379"
+    Logging__LogLevel__Default: "Warning"
+ Logging__LogLevel__Microsoft.AspNetCore: "Error"
 
 api:
   ingress:
     enabled: true
     className: "traefik"
     annotations:
-      traefik.ingress.kubernetes.io/router.middlewares: default-strip-api-prefix@kubernetescrd
+      traefik.ingress.kubernetes.io/router.middlewares: prod-strip-api-prefix@kubernetescrd
     hosts:
       - host: angular-dotnet-web-app.com.ua
-        paths:
-          - path: /api
+      paths:
+     - path: /api
             pathType: Prefix
     middleware:
       enabled: true
       name: strip-api-prefix
       prefixes:
-        - /api
+    - /api
 
-  replicaCount: 3
+  replicaCount: 2
   nameOverride: "weather-api"
   fullnameOverride: "weather-api"
-  
+
   image:
     repository: stepanlehkyi/dotnet-web-api
     tag: "1.0.5"
@@ -43,37 +43,40 @@ api:
   service:
     type: ClusterIP
     port: 8080
-    containerPort: 8080  # Used by the deployment template
+  containerPort: 8080
     protocol: TCP
     name: http
 
   probes:
     liveness:
       httpGet:
-        path: /health/live
+    path: /health/live
         port: 8080
-      initialDelaySeconds: 5
+      initialDelaySeconds: 10
       periodSeconds: 15
     readiness:
       httpGet:
-        path: /health/ready
+path: /health/ready
         port: 8080
       initialDelaySeconds: 20
       periodSeconds: 10
       timeoutSeconds: 7
       successThreshold: 1
-      failureThreshold: 5
+    failureThreshold: 5
 
   resources:
     requests:
-      cpu: "100m"
-      memory: "128Mi"
+      cpu: "200m"
+      memory: "256Mi"
     limits:
-      cpu: "500m"
-      memory: "512Mi"
+      cpu: "1000m"
+      memory: "1Gi"
+
+  nodeSelector:
+    env: prod
 
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 80

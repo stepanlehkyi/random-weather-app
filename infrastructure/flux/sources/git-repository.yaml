@@ -1,0 +1,16 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: weather-app
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  url: https://github.com/stepanlehkyi/random-weather-app
+  ref:
+    branch: main
+  ignore: |
+    # Exclude everything except flux directory and helm charts
+    /*
+    !/infrastructure
+    !/infrastructure/flux
+    !/.helm

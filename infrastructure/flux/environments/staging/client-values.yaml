@@ -5,7 +5,7 @@ env_vars:
   max_retries: 3
   retry_delay_ms: 1000
 
-replicaCount: 2
+replicaCount: 1
 
 nameOverride: "weather-frontend"
 fullnameOverride: "weather-frontend"
@@ -19,7 +19,7 @@ strategy:
   type: RollingUpdate
   rollingUpdate:
     maxUnavailable: 1
-    maxSurge: 2
+    maxSurge: 1
 
 configMapName: "angular-app-config"
 
@@ -41,11 +41,11 @@ probes:
 
 resources:
   requests:
+    cpu: "50m"
+    memory: "64Mi"
+  limits:
     cpu: "100m"
     memory: "128Mi"
-  limits:
-    cpu: "300m"
-    memory: "256Mi"
 
 service:
   type: ClusterIP
@@ -54,21 +54,16 @@ service:
   protocol: TCP
   name: http
 
-
 ingress:
   enabled: true
   className: "traefik"
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: default-strip-api-prefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: staging-strip-api-prefix@kubernetescrd
   hosts:
-    - host: angular-dotnet-web-app.com.ua
+    - host: angular-dotnet-web-app.stg.com.ua
       paths:
-        - path: /
-          pathType: Prefix
+- path: /
+   pathType: Prefix
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 3
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+nodeSelector:
+  env: staging

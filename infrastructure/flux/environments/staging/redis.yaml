@@ -1,0 +1,30 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: redis-staging
+  namespace: staging
+spec:
+  interval: 5m
+  chart:
+  spec:
+      chart: redis-operator
+      sourceRef:
+        kind: HelmRepository
+        name: redis-operator
+        namespace: flux-system
+      version: '>=3.0.0 <4.0.0'
+  values:
+    replicas: 1
+    storage: 1Gi
+    image:
+      tag: v7-latest
+    resources:
+      requests:
+        cpu: 50m
+  memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+    persistence:
+      enabled: true
+      size: 1Gi

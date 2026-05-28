@@ -1,4 +1,4 @@
-# Backend API Configuration
+# Backend API Configuration for Staging
 apiConfig:
   name: weather-api-config
   data:
@@ -8,31 +8,31 @@ apiConfig:
     WeatherApi__EnableCaching: "false"
     WeatherApi__CacheDurationSeconds: "300"
     WeatherApi__ApiVersion: "1.0"
-    ASPNETCORE_ENVIRONMENT: "Production"
-    ASPNETCORE_URLS: "http://+:8080"
-    ConnectionStrings__Redis: "my-redis-cluster-leader:6379"
+    ASPNETCORE_ENVIRONMENT: "Staging"
+  ASPNETCORE_URLS: "http://+:8080"
+    ConnectionStrings__Redis: "redis-staging.staging.svc.cluster.local:6379"
     Logging__LogLevel__Default: "Information"
     Logging__LogLevel__Microsoft.AspNetCore: "Warning"
 
 api:
   ingress:
-    enabled: true
+ enabled: true
     className: "traefik"
     annotations:
-      traefik.ingress.kubernetes.io/router.middlewares: default-strip-api-prefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: staging-strip-api-prefix@kubernetescrd
     hosts:
-      - host: angular-dotnet-web-app.com.ua
+      - host: angular-dotnet-web-app.stg.com.ua
         paths:
           - path: /api
-            pathType: Prefix
+       pathType: Prefix
     middleware:
       enabled: true
       name: strip-api-prefix
       prefixes:
-        - /api
+    - /api
 
-  replicaCount: 3
-  nameOverride: "weather-api"
+  replicaCount: 1
+nameOverride: "weather-api"
   fullnameOverride: "weather-api"
   
   image:
@@ -42,8 +42,8 @@ api:
 
   service:
     type: ClusterIP
-    port: 8080
-    containerPort: 8080  # Used by the deployment template
+ port: 8080
+    containerPort: 8080
     protocol: TCP
     name: http
 
@@ -51,13 +51,13 @@ api:
     liveness:
       httpGet:
         path: /health/live
-        port: 8080
+ port: 8080
       initialDelaySeconds: 5
       periodSeconds: 15
     readiness:
       httpGet:
         path: /health/ready
-        port: 8080
+    port: 8080
       initialDelaySeconds: 20
       periodSeconds: 10
       timeoutSeconds: 7
@@ -66,15 +66,11 @@ api:
 
   resources:
     requests:
-      cpu: "100m"
-      memory: "128Mi"
+      cpu: "50m"
+      memory: "64Mi"
     limits:
-      cpu: "500m"
-      memory: "512Mi"
+      cpu: "200m"
+      memory: "256Mi"
 
-  autoscaling:
-    enabled: false
-    minReplicas: 2
-    maxReplicas: 5
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
+  nodeSelector:
+    env: staging

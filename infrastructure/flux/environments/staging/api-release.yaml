@@ -1,0 +1,22 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: weather-api
+  namespace: staging
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: web-api
+      sourceRef:
+        kind: GitRepository
+        name: weather-app
+        namespace: flux-system
+      sourceRef:
+        path: .helm/web-api
+  valuesFrom:
+    - kind: ConfigMap
+      name: weather-api-values
+  depends:
+    - name: redis-staging
+  suspend: false
